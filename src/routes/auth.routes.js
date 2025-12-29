@@ -1,16 +1,29 @@
 const express =     require("express")
 const userModel = require("../model/user.model")
-
+const jwt =       require("jsonwebtoken")
 const router = express.Router()
 
 
 router.post("/register", async (req, res) => {  
-    const {username, password} = req.body 
+    const { username, password } = req.body 
 
-    const user = await userModel.create({username, password})
-    res.status(201).json({message: "User registered successfully", user})
-}       
-)
+    // 1️⃣ Create user first
+    const user = await userModel.create({ username, password })
+
+    // 2️⃣ Then generate token
+    const token = jwt.sign(
+        { id: user._id },
+        process.env.JWT_SECRET,
+        { expiresIn: "1d" }
+    )
+
+    res.status(201).json({
+        message: "User registered successfully",
+        user,
+        token
+    })
+})
+
 
 router.post("/login", async (req, res) => {  
     const {username, password} = req.body 
@@ -29,4 +42,14 @@ router.post("/login", async (req, res) => {
 }       
 ) 
 
+
+router.get("/user", async (req, res) => {
+    const token = req.body
+
+    if(!token){
+        return res.status(401).json({message: "unauthorized access, token missing"})
+    }
+   const decoded = jwt.verify(token, process.env.JWT_SECRET)
+   res.send(decoded)
+})
 module.exports = router
