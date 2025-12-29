@@ -44,12 +44,16 @@ router.post("/login", async (req, res) => {
 
 
 router.get("/user", async (req, res) => {
-    const token = req.body
+    const token = req.body.token
 
     if(!token){
         return res.status(401).json({message: "unauthorized access, token missing"})
     }
-   const decoded = jwt.verify(token, process.env.JWT_SECRET)
-   res.send(decoded)
+    try{
+        const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        res.send(decoded)
+    }catch(err){
+        res.status(401).json({message: "unauthorized access"})
+    }
 })
-module.exports = router
+module.exports = router 
