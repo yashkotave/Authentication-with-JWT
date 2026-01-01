@@ -14,7 +14,6 @@ router.post("/register", async (req, res) => {
     try {
         const { username, password } = req.body
 
-        // 🔹 validation
         if (!username || !password) {
             return res.status(400).json({
                 message: "Username and password are required"
@@ -46,7 +45,6 @@ router.post("/login", async (req, res) => {
     try {
         const { username, password } = req.body
 
-        // 🔹 validation
         if (!username || !password) {
             return res.status(400).json({
                 message: "Username and password are required"
@@ -109,6 +107,16 @@ router.get("/user", async (req, res) => {
             message: "Unauthorized access"
         })
     }
+})
+
+
+// LOGOUT  ✅ (YAHAN ADD KIYA)
+router.post("/logout", (req, res) => {
+    res.clearCookie("token")
+
+    res.status(200).json({
+        message: "User logged out successfully"
+    })
 })
 
 module.exports = router
